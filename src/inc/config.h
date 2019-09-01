@@ -37,6 +37,7 @@ class Config {
 
         static Config* instance;
         string path;
+        string type;
         vector<string> tests;
         vector<string> skips;
         vector<string> files;
@@ -61,6 +62,8 @@ class Config {
 
         bool parse_cmd(int argc, char* argv[]);
         bool parse_conf();
+
+        bool is_exec() const;
 
         void print_usage() const;
         void print(log_level level) const;

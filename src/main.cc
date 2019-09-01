@@ -1,6 +1,7 @@
 #include "config.h"
 #include "logger.h"
 #include "execgen.h"
+#include "seedgen.h"
 
 int main(int argc, char* argv[]) {
 
@@ -15,7 +16,12 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    ExecGen::get()->generate();
+    if(Config::get()->is_exec()) {
+        ExecGen::get()->generate();
+    }
+    else {
+        SeedGen::get()->generate();
+    }
 
     return 0;
 }

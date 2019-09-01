@@ -139,8 +139,14 @@ vector<string> Config::get_files() const {
 }
 
 bool Config::parse_cmd(int argc, char* argv[]) {
-    if (argc >= 2) {
-        this->path = string(argv[1]);
+    if (argc >= 3) {
+        this->type = string(argv[1]);
+        this->path = string(argv[2]);
+
+        if (this->type != "exec" && this->type != "seed") {
+            return false;
+        }
+
         return true;
     }
     return false;
@@ -222,8 +228,15 @@ bool Config::parse_conf() {
     return true;
 }
 
+bool Config::is_exec() const {
+    if (this->type == "exec") {
+        return true;
+    }
+    return false;
+}
+
 void Config::print_usage() const {
-    Logger::get()->log(INFO, "./fuzzbuilder ${config_path}");
+    Logger::get()->log(INFO, "./fuzzbuilder ${type}[exec|seed] ${config_path}");
 }
 
 void Config::print(log_level level) const {

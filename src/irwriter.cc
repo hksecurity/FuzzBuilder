@@ -6,6 +6,7 @@
 #include "irireader.h"
 
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/Support/raw_ostream.h"
 
 using namespace llvm;
 
@@ -107,6 +108,60 @@ Function* IRWriter::get_memcpy_function(Module& m) {
     Type* rty = Type::getVoidTy(m.getContext());
     FunctionType *fty = FunctionType::get(rty, ptys, false);
     return dyn_cast<Function>(m.getOrInsertFunction("llvm.memcpy.p0i8.p0i8.i32", fty));
+}
+
+Function* IRWriter::get_open_function(Module& m) {
+    vector<Type*> ptys = {
+        Type::getInt8PtrTy(m.getContext()),
+        Type::getInt32Ty(m.getContext()),
+    };
+
+    Type* rty = Type::getInt32Ty(m.getContext());
+    FunctionType *fty = FunctionType::get(rty, ptys, true);
+    return dyn_cast<Function>(m.getOrInsertFunction("open64", fty));
+}
+
+Function* IRWriter::get_flock_function(Module& m) {
+    vector<Type*> ptys = {
+        Type::getInt32Ty(m.getContext()),
+        Type::getInt32Ty(m.getContext())
+    };
+
+    Type* rty = Type::getInt32Ty(m.getContext());
+    FunctionType* fty = FunctionType::get(rty, ptys, false);
+    return dyn_cast<Function>(m.getOrInsertFunction("flock", fty));
+}
+
+Function* IRWriter::get_write_function(Module &m) {
+    vector<Type*> ptys = {
+        Type::getInt32Ty(m.getContext()),
+        Type::getInt8PtrTy(m.getContext()),
+        Type::getInt32Ty(m.getContext())
+    };
+
+    Type* rty = Type::getInt32Ty(m.getContext());
+    FunctionType* fty = FunctionType::get(rty, ptys, false);
+    return dyn_cast<Function>(m.getOrInsertFunction("write", fty));
+}
+
+Function* IRWriter::get_close_function(Module& m) {
+    vector<Type*> ptys = {
+        Type::getInt32Ty(m.getContext())
+    };
+
+    Type* rty = Type::getInt32Ty(m.getContext());
+    FunctionType* fty = FunctionType::get(rty, ptys, false);
+    return dyn_cast<Function>(m.getOrInsertFunction("close", fty));
+}
+
+Function* IRWriter::get_strlen_function(Module& m) {
+    vector<Type*> ptys = {
+        Type::getInt8PtrTy(m.getContext()),
+    };
+
+    Type* rty = Type::getInt32Ty(m.getContext());
+    FunctionType* fty = FunctionType::get(rty, ptys, false);
+    return dyn_cast<Function>(m.getOrInsertFunction("strlen", fty));
 }
 
 void IRWriter::set_argument(Instruction& i, Value& v, size_t idx) {
@@ -298,4 +353,73 @@ bool IRWriter::skip() {
 
     Logger::get()->log(INFO, "Skip Instrumented at " + string(this->f->getName()));
     return true;
+}
+
+void IRWriter::collect() {
+
+    if(this->f->size() == 0) {
+        return;
+    }
+
+    BasicBlock& entry1 = this->f->getEntryBlock();
+    Instruction& inst = *(entry1.getFirstInsertionPt());
+    BasicBlock* link = entry1.splitBasicBlock(&inst);
+    entry1.begin()->eraseFromParent();
+    IRBuilder<> builder(&entry1);
+    LLVMContext& ctx = this->f->getContext();
+    Module& module = *(this->f->getParent());
+
+    BasicBlock* entry2 = BasicBlock::Create(ctx, "", this->f);
+
+    Value* buffer = this->f->arg_begin() +
+        (Config::get()->get_fuzz(string(this->f->getName())) - 1);
+    Value* size = nullptr;
+
+    if(Config::get()->get_size(string(this->f->getName())) != 0) {
+        size = this->f->arg_begin() +
+            (Config::get()->get_size(string(this->f->getName())) - 1 );
+    } else {
+        size = builder.CreateCall(get_strlen_function(module),
+            { buffer });
+    }
+
+    Value* fd = builder.CreateAlloca(Type::getInt32Ty(module.getContext()));
+    Value* path = builder.CreateGlobalString(COLLECT_PATH);
+    Value* func_name = builder.CreateGlobalString(string(this->f->getName()));
+    Value* func_name_size = builder.getInt32(string(this->f->getName()).size());
+    Value* splitter = builder.CreateGlobalString(SPLITTER);
+    Value* splitter_size = builder.getInt32(SPLITTER.size());
+    Value* newline = builder.CreateGlobalString("\n");
+
+    Value* cmp = builder.CreateICmpUGT(size, builder.getInt32(1));
+    builder.CreateCondBr(cmp, entry2, link);
+
+    builder.SetInsertPoint(entry2);
+
+    Function* func = get_open_function(module);
+
+    Value* call = builder.CreateCall(func,
+        { builder.CreateInBoundsGEP(path, {builder.getInt32(0), builder.getInt32(0)}),
+            builder.getInt32(1089), builder.getInt32(420) });
+    Value* call1 = builder.CreateCall(get_flock_function(module),
+        { call, builder.getInt32(2) });
+    Value* call2 = builder.CreateCall(get_write_function(module),
+        { call, builder.CreateInBoundsGEP(func_name, {builder.getInt32(0), builder.getInt32(0)}),
+            func_name_size });
+    Value* call3 = builder.CreateCall(get_write_function(module),
+        { call, builder.CreateInBoundsGEP(newline, {builder.getInt32(0), builder.getInt32(0)}),
+            builder.getInt32(1) });
+    Value* call4 = builder.CreateCall(get_write_function(module),
+        { call, buffer, size });
+    Value* call5 = builder.CreateCall(get_write_function(module),
+        { call, builder.CreateInBoundsGEP(newline, {builder.getInt32(0), builder.getInt32(0)}), builder.getInt32(1) });
+    Value* call6 = builder.CreateCall(get_write_function(module),
+        { call, builder.CreateInBoundsGEP(splitter, {builder.getInt32(0), builder.getInt32(0)}), splitter_size });
+    Value* call7 = builder.CreateCall(get_flock_function(module),
+        { call, builder.getInt32(8)} );
+    Value* call8 = builder.CreateCall(get_close_function(module),
+        { call });
+    builder.CreateBr(link);
+
+    Logger::get()->log(INFO, "Collect Instrumented at " + string(this->f->getName()));
 }

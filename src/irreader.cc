@@ -6,6 +6,7 @@
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/DebugInfoMetadata.h"
+#include "llvm/Support/raw_ostream.h"
 
 #include <iostream>
 using namespace std;
@@ -29,9 +30,9 @@ set<Function*> IRReader::get_gtest_functions() const {
                 continue;
             }
         }
-
         ret.insert(&f);
     }
+    return ret;
 }
 
 set<Instruction*> IRReader::get_calls(Function& f) const {
@@ -60,6 +61,19 @@ set<Function*> IRReader::get_test_functions() const {
             if(this->is_test(f)) {
                 ret.insert(&f);
             }
+        }
+    }
+
+    return ret;
+}
+
+set<Function*> IRReader::get_target_functions() const {
+    set<Function*> ret;
+    vector<string> targets = Config::get()->get_targets();
+
+    for(Function& f : *(this->m)) {
+        if(find(targets.begin(), targets.end(), string(f.getName())) != targets.end()) {
+            ret.insert(&f);
         }
     }
 
@@ -205,6 +219,10 @@ set<Function*> IRReader::get_functions_to_remove() const {
     }
 
     return ret;
+}
+
+set<Function*> IRReader::get_functions_to_collect() const {
+    return  this->get_target_functions();
 }
 
 set<Instruction*> IRReader::get_target_instructions(string n) const {

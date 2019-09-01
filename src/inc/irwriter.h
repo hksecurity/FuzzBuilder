@@ -16,6 +16,8 @@ class IRWriter {
         static set<Instruction*> MODIFIED;
         const string GLOBAL_BUFFER_PREFIX = "fuzzbuilder_buffer";
         const string GLOBAL_SIZE_PREFIX = "fuzzbuilder_size";
+        const string COLLECT_PATH = "/tmp/fuzzbuilder.collect";
+        const string SPLITTER = "fuzzbuilder=============\n";
         Function* f;
 
         GlobalVariable* get_global_buffer(Module& m, const bool is_user);
@@ -24,6 +26,11 @@ class IRWriter {
         Function* get_calloc_function(Module& m);
         Function* get_free_function(Module& m);
         Function* get_memcpy_function(Module& m);
+        Function* get_open_function(Module& m);
+        Function* get_flock_function(Module& m);
+        Function* get_write_function(Module& m);
+        Function* get_close_function(Module& m);
+        Function* get_strlen_function(Module& m);
 
         void set_argument(Instruction& i, Value& v, size_t idx);
 
@@ -35,6 +42,7 @@ class IRWriter {
         bool interface();
         void fuzz();
         bool skip();
+        void collect();
 };
 
 #endif
