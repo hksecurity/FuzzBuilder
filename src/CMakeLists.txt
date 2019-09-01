@@ -10,5 +10,5 @@ include_directories(${LLVM_INCLUDE_DIRS})
 include_directories(inc)
 add_definitions(${LLVM_DEFINITIONS})
 
-add_executable(fuzzbuilder main.cc config.cc logger.cc execgen.cc loader.cc irreader.cc irfreader.cc irireader.cc irwriter.cc)
+add_executable(fuzzbuilder main.cc config.cc logger.cc execgen.cc seedgen.cc loader.cc irreader.cc irfreader.cc irireader.cc irwriter.cc)
 target_link_libraries(fuzzbuilder PUBLIC LLVMBitReader LLVMBitWriter)
