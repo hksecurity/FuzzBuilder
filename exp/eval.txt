@@ -1,0 +1,159 @@
+#1 Command sets to fuzz each binary in the docker container.
+Fuzzing in the docker container may requires system settings.
+
+fc1 : mkdir -p /exp/c-ares/fc1 && cd /exp/c-ares/fc1 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/c-ares/seed/fuzzbuilder/opt/ares_create_query -o /exp/c-ares/output/fuzzbuilder/ares_create_query_fuzzer /exp/c-ares/bin/fuzz/fuzzbuilder/ares_create_query_fuzzer
+
+fc2 : mkdir -p /exp/c-ares/fc2 && cd /exp/c-ares/fc2 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/c-ares/seed/fuzzbuilder/opt/ares_parse_reply -o /exp/c-ares/output/fuzzbuilder/ares_parse_reply_fuzzer /exp/c-ares/bin/fuzz/fuzzbuilder/ares_parse_reply_fuzzer
+
+c1 : mkdir -p /exp/c-ares/c1 && cd /exp/c-ares/c1 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/c-ares/seed/eval/ares_create_query_fuzzer/oss-fuzz -o /exp/c-ares/output/oss-fuzz/ares_create_query_fuzzer /exp/c-ares/bin/fuzz/oss-fuzz/ares_create_query_fuzzer @@
+
+c2 : mkdir -p /exp/c-ares/c2 && cd /exp/c-ares/c2 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/c-ares/seed/eval/ares_parse_reply_fuzzer/oss-fuzz -o /exp/c-ares/output/oss-fuzz/ares_parse_reply_fuzzer /exp/c-ares/bin/fuzz/oss-fuzz/ares_parse_reply_fuzzer @@
+
+fe1 : mkdir -p /exp/expat/fe1 && cd /exp/expat/fe1 && timeout 129600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/expat/seed/fuzzbuilder/opt/XML_Parse -o /exp/expat/output/fuzzbuilder/XML_Parse_fuzzer /exp/expat/bin/fuzz/fuzzbuilder/XML_Parse_fuzzer
+
+e1 : mkdir -p /exp/expat/e1 && cd /exp/expat/e1 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/expat/seed/eval/parse_ISO_8859_1_fuzzer/oss-fuzz -o /exp/expat/output/oss-fuzz/parse_ISO_8859_1_fuzzer /exp/expat/bin/fuzz/oss-fuzz/parse_ISO_8859_1_fuzzer @@
+
+e2 : mkdir -p /exp/expat/e2 && cd /exp/expat/e2 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/expat/seed/eval/parse_US_ASCII_fuzzer/oss-fuzz -o /exp/expat/output/oss-fuzz/parse_US_ASCII_fuzzer /exp/expat/bin/fuzz/oss-fuzz/parse_US_ASCII_fuzzer @@
+
+e3 : mkdir -p /exp/expat/e3 && cd /exp/expat/e3 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/expat/seed/eval/parse_UTF_16BE_fuzzer/oss-fuzz -o /exp/expat/output/oss-fuzz/parse_UTF_16BE_fuzzer /exp/expat/bin/fuzz/oss-fuzz/parse_UTF_16BE_fuzzer @@
+
+e4 : mkdir -p /exp/expat/e4 && cd /exp/expat/e4 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/expat/seed/eval/parse_UTF_16_fuzzer/oss-fuzz -o /exp/expat/output/oss-fuzz/parse_UTF_16_fuzzer /exp/expat/bin/fuzz/oss-fuzz/parse_UTF_16_fuzzer @@
+
+e5 : mkdir -p /exp/expat/e5 && cd /exp/expat/e5 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/expat/seed/eval/parse_UTF_16LE_fuzzer/oss-fuzz -o /exp/expat/output/oss-fuzz/parse_UTF_16LE_fuzzer /exp/expat/bin/fuzz/oss-fuzz/parse_UTF_16LE_fuzzer @@
+
+e6 : mkdir -p /exp/expat/e6 && cd /exp/expat/e6 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/expat/seed/eval/parse_UTF_8_fuzzer/oss-fuzz -o /exp/expat/output/oss-fuzz/parse_UTF_8_fuzzer /exp/expat/bin/fuzz/oss-fuzz/parse_UTF_8_fuzzer @@
+
+fb1 : mkdir -p /exp/boringssl/fb1 && cd /exp/boringssl/fb1 && timeout 216000 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/fuzzbuilder/opt/crpyto_test_CBS -o /exp/boringssl/output/fuzzbuilder/crypto_test_CBS_fuzzer /exp/boringssl/bin/fuzz/fuzzbuilder/crypto_test_CBS_fuzzer
+
+fb2 : mkdir -p /exp/boringssl/fb2 && cd /exp/boringssl/fb2 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/fuzzbuilder/opt/ssl_test_BIO -o /exp/boringssl/output/fuzzbuilder/ssl_test_BIO_fuzzer /exp/boringssl/bin/fuzz/fuzzbuilder/ssl_test_BIO_fuzzer
+
+fb3 : mkdir -p /exp/boringssl/fb3 && cd /exp/boringssl/fb3 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/fuzzbuilder/opt/crypto_test_BIO -o /exp/boringssl/output/fuzzbuilder/crypto_test_BIO_fuzzer /exp/boringssl/bin/fuzz/fuzzbuilder/crypto_test_BIO_fuzzer
+
+fb4 : mkdir -p /exp/boringssl/fb4 && cd /exp/boringssl/fb4 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/fuzzbuilder/opt/ssl_test_SSL -o /exp/boringssl/output/fuzzbuilder/ssl_test_SSL_fuzzer /exp/boringssl/bin/fuzz/fuzzbuilder/ssl_test_SSL_fuzzer
+
+b1 : mkdir -p /exp/boringssl/b1 && cd /exp/boringssl/b1 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/eval/bn_div/oss-fuzz -o /exp/boringssl/output/oss-fuzz/bn_div /exp/boringssl/bin/fuzz/oss-fuzz/bn_div @@
+
+b2 : mkdir -p /exp/boringssl/b2 && cd /exp/boringssl/b2 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/eval/bn_mod_exp/oss-fuzz -o /exp/boringssl/output/oss-fuzz/bn_mod_exp /exp/boringssl/bin/fuzz/oss-fuzz/bn_mod_exp @@
+
+b3 : mkdir -p /exp/boringssl/b3 && cd /exp/boringssl/b3 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/eval/client/oss-fuzz -o /exp/boringssl/output/oss-fuzz/client /exp/boringssl/bin/fuzz/oss-fuzz/client @@
+
+b4 : mkdir -p /exp/boringssl/b4 && cd /exp/boringssl/b4 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/eval/dtls_client/oss-fuzz -o /exp/boringssl/output/oss-fuzz/dtls_client /exp/boringssl/bin/fuzz/oss-fuzz/dtls_client @@
+
+b5 : mkdir -p /exp/boringssl/b5 && cd /exp/boringssl/b5 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/eval/dtls_server/oss-fuzz -o /exp/boringssl/output/oss-fuzz/dtls_server /exp/boringssl/bin/fuzz/oss-fuzz/dtls_server @@
+
+b6 : mkdir -p /exp/boringssl/b6 && cd /exp/boringssl/b6 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/eval/pkcs12/oss-fuzz -o /exp/boringssl/output/oss-fuzz/pkcs12 /exp/boringssl/bin/fuzz/oss-fuzz/pkcs12 @@
+
+b7 : mkdir -p /exp/boringssl/b7 && cd /exp/boringssl/b7 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/eval/pkcs8/oss-fuzz -o /exp/boringssl/output/oss-fuzz/pkcs8 /exp/boringssl/bin/fuzz/oss-fuzz/pkcs8 @@
+
+b8 : mkdir -p /exp/boringssl/b8 && cd /exp/boringssl/b8 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/eval/read_pem/oss-fuzz -o /exp/boringssl/output/oss-fuzz/read_pem /exp/boringssl/bin/fuzz/oss-fuzz/read_pem @@
+
+b9 : mkdir -p /exp/boringssl/b9 && cd /exp/boringssl/b9 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/eval/server/oss-fuzz -o /exp/boringssl/output/oss-fuzz/server /exp/boringssl/bin/fuzz/oss-fuzz/server @@
+
+b10 : mkdir -p /exp/boringssl/b10 && cd /exp/boringssl/b10 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/eval/session/oss-fuzz -o /exp/boringssl/output/oss-fuzz/session /exp/boringssl/bin/fuzz/oss-fuzz/session @@
+
+b11 : mkdir -p /exp/boringssl/b11 && cd /exp/boringssl/b11 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/eval/spki/oss-fuzz -o /exp/boringssl/output/oss-fuzz/spki /exp/boringssl/bin/fuzz/oss-fuzz/spki @@
+
+b12 : mkdir -p /exp/boringssl/b12 && cd /exp/boringssl/b12 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/boringssl/seed/eval/ssl_ctx_api/oss-fuzz -o /exp/boringssl/output/oss-fuzz/ssl_ctx_api /exp/boringssl/bin/fuzz/oss-fuzz/ssl_ctx_api @@
+
+fy1 : mkdir -p /exp/yara/fy1 && cd /exp/yara/fy1 && timeout 86400 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/yara/seed/fuzzbuilder/opt/yr_rules_scan_mem -o /exp/yara/output/fuzzbuilder/yr_rules_scan_mem_fuzzer /exp/yara/bin/fuzz/fuzzbuilder/yr_rules_scan_mem_fuzzer
+
+fy2 : mkdir -p /exp/yara/fy2 && cd /exp/yara/fy2 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/yara/seed/fuzzbuilder/opt/yr_compiler_add_string -o /exp/yara/output/fuzzbuilder/yr_compiler_add_string_fuzzer /exp/yara/bin/fuzz/fuzzbuilder/yr_compiler_add_string_fuzzer
+
+y1 : mkdir -p /exp/yara/y1 && cd /exp/yara/y1 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/yara/seed/eval/dex_fuzzer/oss-fuzz -o /exp/yara/output/oss-fuzz/dex_fuzzer /exp/yara/bin/fuzz/oss-fuzz/dex_fuzzer @@
+
+y2 : mkdir -p /exp/yara/y2 && cd /exp/yara/y2 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/yara/seed/eval/dotnet_fuzzer/oss-fuzz -o /exp/yara/output/oss-fuzz/dotnet_fuzzer /exp/yara/bin/fuzz/oss-fuzz/dotnet_fuzzer @@
+
+y3 : mkdir -p /exp/yara/y3 && cd /exp/yara/y3 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/yara/seed/eval/elf_fuzzer/oss-fuzz -o /exp/yara/output/oss-fuzz/elf_fuzzer /exp/yara/bin/fuzz/oss-fuzz/elf_fuzzer @@
+
+y4 : mkdir -p /exp/yara/y4 && cd /exp/yara/y4 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/yara/seed/eval/pe_fuzzer/oss-fuzz -o /exp/yara/output/oss-fuzz/pe_fuzzer /exp/yara/bin/fuzz/oss-fuzz/pe_fuzzer @@
+
+y5 : mkdir -p /exp/yara/y5 && cd /exp/yara/y5 && timeout 21600 /tool/afl-2.52b/afl-fuzz -m 1024 -i /exp/yara/seed/eval/rules_fuzzer/oss-fuzz -o /exp/yara/output/oss-fuzz/rules_fuzzer /exp/yara/bin/fuzz/oss-fuzz/rules_fuzzer @@
+
+#2 Command sets to evalute the number of valid seeds and its initial coverage (Figure 5 and Table 6)
+
+Checks output file in the directory after each command executed. Output file is txt file that is in each command. For example, The output of the first will be stored in seed_c1_f.txt
+
+c1(fuzzbuilder) : python /tool/coverage.py /exp/c-ares c1 file source/c-ares seed seed_c1_f.txt bin/cov/oss-fuzz/ares_create_query_fuzzer seed/eval/ares_create_query/fuzzbuilder
+c2(fuzzbuilder) : python /tool/coverage.py /exp/c-ares c2 file source/c-ares seed seed_c2_f.txt bin/cov/oss-fuzz/ares_parse_reply_fuzzer seed/eval/ares_parse_reply/fuzzbuilder
+c1(oss-fuzz) : python /tool/coverage.py /exp/c-ares c1 file source/c-ares seed seed_c1_o.txt bin/cov/oss-fuzz/ares_create_query_fuzzer seed/eval/ares_create_query/oss-fuzz
+c2(oss-fuzz) : python /tool/coverage.py /exp/c-ares c2 file source/c-ares seed seed_c2_o.txt bin/cov/oss-fuzz/ares_parse_reply_fuzzer seed/eval/ares_parse_reply/oss-fuzz
+e1(fuzzbuilder) : python /tool/coverage.py /exp/expat e1 file source/libexpat/expat seed seed_e1_f.txt bin/cov/oss-fuzz/parse_ISO_8859_1_fuzzer seed/eval/parse_ISO_8859_1_fuzzer/fuzzbuilder
+e2(fuzzbuilder) : python /tool/coverage.py /exp/expat e2 file source/libexpat/expat seed seed_e2_f.txt bin/cov/oss-fuzz/parse_US_ASCII_fuzzer seed/eval/parse_US_ASCII_fuzzer/fuzzbuilder
+e3(fuzzbuilder) : python /tool/coverage.py /exp/expat e3 file source/libexpat/expat seed seed_e3_f.txt bin/cov/oss-fuzz/parse_UTF_16BE_fuzzer seed/eval/parse_UTF_16BE_fuzzer/fuzzbuilder
+e4(fuzzbuilder) : python /tool/coverage.py /exp/expat e4 file source/libexpat/expat seed seed_e4_f.txt bin/cov/oss-fuzz/parse_UTF_16_fuzzer seed/eval/parse_UTF_16_fuzzer/fuzzbuilder
+e5(fuzzbuilder) : python /tool/coverage.py /exp/expat e5 file source/libexpat/expat seed seed_e5_f.txt bin/cov/oss-fuzz/parse_UTF_16LE_fuzzer seed/eval/parse_UTF_16LE_fuzzer/fuzzbuilder
+e6(fuzzbuilder) : python /tool/coverage.py /exp/expat e6 file source/libexpat/expat seed seed_e6_f.txt bin/cov/oss-fuzz/parse_UTF_8_fuzzer seed/eval/parse_UTF_8_fuzzer/fuzzbuilder
+e1(oss-fuzz) : python /tool/coverage.py /exp/expat e1 file source/libexpat/expat seed seed_e1_o.txt bin/cov/oss-fuzz/parse_ISO_8859_1_fuzzer seed/eval/parse_ISO_8859_1_fuzzer/oss-fuzz
+e2(oss-fuzz) : python /tool/coverage.py /exp/expat e2 file source/libexpat/expat seed seed_e2_o.txt bin/cov/oss-fuzz/parse_US_ASCII_fuzzer seed/eval/parse_US_ASCII_fuzzer/oss-fuzz
+e3(oss-fuzz) : python /tool/coverage.py /exp/expat e3 file source/libexpat/expat seed seed_e3_o.txt bin/cov/oss-fuzz/parse_UTF_16BE_fuzzer seed/eval/parse_UTF_16BE_fuzzer/oss-fuzz
+e4(oss-fuzz) : python /tool/coverage.py /exp/expat e4 file source/libexpat/expat seed seed_e4_o.txt bin/cov/oss-fuzz/parse_UTF_16_fuzzer seed/eval/parse_UTF_16_fuzzer/oss-fuzz
+e5(oss-fuzz) : python /tool/coverage.py /exp/expat e5 file source/libexpat/expat seed seed_e5_o.txt bin/cov/oss-fuzz/parse_UTF_16LE_fuzzer seed/eval/parse_UTF_16LE_fuzzer/oss-fuzz
+e6(oss-fuzz) : python /tool/coverage.py /exp/expat e6 file source/libexpat/expat seed seed_e6_o.txt bin/cov/oss-fuzz/parse_UTF_8_fuzzer seed/eval/parse_UTF_8_fuzzer/oss-fuzz
+b1(fuzzbuilder) : python /tool/coverage.py /exp/boringssl b1 file source/boringssl seed seed_b1_f.txt bin/cov/oss-fuzz/bn_div seed/eval/bn_div/fuzzbuilder
+b2(fuzzbuilder) : python /tool/coverage.py /exp/boringssl b2 file source/boringssl seed seed_b2_f.txt bin/cov/oss-fuzz/bn_mod_exp seed/eval/bn_mod_exp/fuzzbuilder
+b3(fuzzbuilder) : python /tool/coverage.py /exp/boringssl b3 file source/boringssl seed seed_b3_f.txt bin/cov/oss-fuzz/client seed/eval/client/fuzzbuilder
+b4(fuzzbuilder) : python /tool/coverage.py /exp/boringssl b4 file source/boringssl seed seed_b4_f.txt bin/cov/oss-fuzz/dtls_client seed/eval/dtls_client/fuzzbuilder
+b5(fuzzbuilder) : python /tool/coverage.py /exp/boringssl b5 file source/boringssl seed seed_b5_f.txt bin/cov/oss-fuzz/dtls_server seed/eval/dtls_server/fuzzbuilder
+b6(fuzzbuilder) : python /tool/coverage.py /exp/boringssl b6 file source/boringssl seed seed_b6_f.txt bin/cov/oss-fuzz/pkcs12 seed/eval/pkcs12/fuzzbuilder
+b7(fuzzbuilder) : python /tool/coverage.py /exp/boringssl b7 file source/boringssl seed seed_b7_f.txt bin/cov/oss-fuzz/pkcs8 seed/eval/pkcs8/fuzzbuilder
+b8(fuzzbuilder) : python /tool/coverage.py /exp/boringssl b8 file source/boringssl seed seed_b8_f.txt bin/cov/oss-fuzz/read_pem seed/eval/read_pem/fuzzbuilder
+b9(fuzzbuilder) : python /tool/coverage.py /exp/boringssl b9 file source/boringssl seed seed_b9_f.txt bin/cov/oss-fuzz/server seed/eval/server/fuzzbuilder
+b10(fuzzbuilder) : python /tool/coverage.py /exp/boringssl b10 file source/boringssl seed seed_b10_f.txt bin/cov/oss-fuzz/session seed/eval/session/fuzzbuilder
+b11(fuzzbuilder) : python /tool/coverage.py /exp/boringssl b11 file source/boringssl seed seed_b11_f.txt bin/cov/oss-fuzz/spki seed/eval/spki/fuzzbuilder
+b12(fuzzbuilder) : python /tool/coverage.py /exp/boringssl b12 file source/boringssl seed seed_b12_f.txt bin/cov/oss-fuzz/ssl_ctx_api seed/eval/ssl_ctx_api/fuzzbuilder
+b1(oss-fuzz) : python /tool/coverage.py /exp/boringssl b1 file source/boringssl seed seed_b1_o.txt bin/cov/oss-fuzz/bn_div seed/eval/bn_div/oss-fuzz
+b2(oss-fuzz) : python /tool/coverage.py /exp/boringssl b2 file source/boringssl seed seed_b2_o.txt bin/cov/oss-fuzz/bn_mod_exp seed/eval/bn_mod_exp/oss-fuzz
+b3(oss-fuzz) : python /tool/coverage.py /exp/boringssl b3 file source/boringssl seed seed_b3_o.txt bin/cov/oss-fuzz/client seed/eval/client/oss-fuzz
+b4(oss-fuzz) : python /tool/coverage.py /exp/boringssl b4 file source/boringssl seed seed_b4_o.txt bin/cov/oss-fuzz/dtls_client seed/eval/dtls_client/oss-fuzz
+b5(oss-fuzz) : python /tool/coverage.py /exp/boringssl b5 file source/boringssl seed seed_b5_o.txt bin/cov/oss-fuzz/dtls_server seed/eval/dtls_server/oss-fuzz
+b6(oss-fuzz) : python /tool/coverage.py /exp/boringssl b6 file source/boringssl seed seed_b6_o.txt bin/cov/oss-fuzz/pkcs12 seed/eval/pkcs12/oss-fuzz
+b7(oss-fuzz) : python /tool/coverage.py /exp/boringssl b7 file source/boringssl seed seed_b7_o.txt bin/cov/oss-fuzz/pkcs8 seed/eval/pkcs8/oss-fuzz
+b8(oss-fuzz) : python /tool/coverage.py /exp/boringssl b8 file source/boringssl seed seed_b8_o.txt bin/cov/oss-fuzz/read_pem seed/eval/read_pem/oss-fuzz
+b9(oss-fuzz) : python /tool/coverage.py /exp/boringssl b9 file source/boringssl seed seed_b9_o.txt bin/cov/oss-fuzz/server seed/eval/server/oss-fuzz
+b10(oss-fuzz) : python /tool/coverage.py /exp/boringssl b10 file source/boringssl seed seed_b10_o.txt bin/cov/oss-fuzz/session seed/eval/session/oss-fuzz
+b11(oss-fuzz) : python /tool/coverage.py /exp/boringssl b11 file source/boringssl seed seed_b11_o.txt bin/cov/oss-fuzz/spki seed/eval/spki/oss-fuzz
+b12(oss-fuzz) : python /tool/coverage.py /exp/boringssl b12 file source/boringssl seed seed_b12_o.txt bin/cov/oss-fuzz/ssl_ctx_api seed/eval/ssl_ctx_api/oss-fuzz
+y1(fuzzbuilder) : python /tool/coverage.py /exp/yara y1 stdin source/yara seed seed_y1_f.txt bin/cov/fuzzbuilder/dex_fuzzer seed/eval/dex_fuzzer/fuzzbuilder
+y2(fuzzbuilder) : python /tool/coverage.py /exp/yara y2 stdin source/yara seed seed_y2_f.txt bin/cov/fuzzbuilder/dotnet_fuzzer seed/eval/dotnet_fuzzer/fuzzbuilder
+y3(fuzzbuilder) : python /tool/coverage.py /exp/yara y3 stdin source/yara seed seed_y3_f.txt bin/cov/fuzzbuilder/elf_fuzzer seed/eval/elf_fuzzer/fuzzbuilder
+y4(fuzzbuilder) : python /tool/coverage.py /exp/yara y4 stdin source/yara seed seed_y4_f.txt bin/cov/fuzzbuilder/pe_fuzzer seed/eval/pe_fuzzer/fuzzbuilder
+y5(fuzzbuilder) : python /tool/coverage.py /exp/yara y5 stdin source/yara seed seed_y5_f.txt bin/cov/fuzzbuilder/pe_fuzzer seed/eval/rules_fuzzer/fuzzbuilder
+y1(oss-fuzz) : python /tool/coverage.py /exp/yara y1 file source/yara seed seed_y1_o.txt bin/cov/oss-fuzz/dex_fuzzer seed/eval/dex_fuzzer/oss-fuzz
+y2(oss-fuzz) : python /tool/coverage.py /exp/yara y2 file source/yara seed seed_y2_o.txt bin/cov/oss-fuzz/dotnet_fuzzer seed/eval/dotnet_fuzzer/oss-fuzz
+y3(oss-fuzz) : python /tool/coverage.py /exp/yara y3 file source/yara seed seed_y3_o.txt bin/cov/oss-fuzz/elf_fuzzer seed/eval/elf_fuzzer/oss-fuzz
+y4(oss-fuzz) : python /tool/coverage.py /exp/yara y4 file source/yara seed seed_y4_o.txt bin/cov/oss-fuzz/pe_fuzzer seed/eval/pe_fuzzer/oss-fuzz
+y5(oss-fuzz) : python /tool/coverage.py /exp/yara y5 file source/yara seed seed_y5_o.txt bin/cov/oss-fuzz/pe_fuzzer seed/eval/rules_fuzzer/oss-fuzz
+
+#3. Command sets to evaluate code coverage of fuzzing (Figure 6 and Figure 7)
+
+Checks output file in the directory after each command executed. Output file is txt file that is in each command. For example, The output of the first will be stored in seed_c1_f.txt
+
+fc1 : python /tool/coverage.py /exp/c-ares fc1 stdin source/c-ares exec exec_fc1_f.txt bin/cov/fuzzbuilder/ares_create_query_fuzzer output/fuzzbuilder/ares_create_query/queue
+fc2 : python /tool/coverage.py /exp/c-ares fc2 stdin source/c-ares exec exec_fc2_f.txt bin/cov/fuzzbuilder/ares_parse_reply_fuzzer output/fuzzbuilder/ares_parse_reply/queue
+c1 : python /tool/coverage.py /exp/c-ares c1 file source/c-ares exec exec_c1_o.txt bin/cov/oss-fuzz/ares_create_query_fuzzer bin/cov/oss-fuzz/ares_create_query_fuzzer
+c2 : python /tool/coverage.py /exp/c-ares c2 file source/c-ares exec exec_c2_o.txt bin/cov/oss-fuzz/ares_parse_reply_fuzzer output/oss-fuzz/ares_parse_reply/queue
+fe1 : python /tool/coverage.py /exp/expat fe1 stdin source/libexpat/expat exec exec_fe1_f.txt bin/cov/fuzzbuilder/XML_Parse_fuzzer output/fuzzbuilder/XML_Parse/queue
+e1,e2,e3,e4,e5,e6 : python /tool/coverage.py /exp/expat e123456 file source/libexpat/expat exec exec_e123456_o.txt bin/cov/oss-fuzz/parse_ISO_8859_1_fuzzer output/oss-fuzz/parse_ISO_8859_1_fuzzer/queue bin/cov/oss-fuzz/parse_US_ASCII_fuzzer output/oss-fuzz/parse_US_ASCII_fuzzer/queue bin/cov/oss-fuzz/parse_UTF_16BE_fuzzer output/oss-fuzz/parse_UTF_16BE_fuzzer/queue bin/cov/oss-fuzz/parse_UTF_16_fuzzer output/oss-fuzz/parse_UTF_16_fuzzer/queue bin/cov/oss-fuzz/parse_UTF_16LE_fuzzer output/oss-fuzz/parse_UTF_16LE_fuzzer/queue bin/cov/oss-fuzz/parse_UTF_8_fuzzer output/oss-fuzz/parse_UTF_8_fuzzer/queue
+fb1 : python /tool/coverage.py /exp/boringssl fb1 stdin source/boringssl exec exec_fb1_f.txt bin/cov/fuzzbuilder/crypto_test_CBS_fuzzer output/fuzzbuilder/crypto_test_CBS/queue
+fb2, fb3 : python /tool/coverage.py /exp/boringssl fb23 stdin source/boringssl exec exec_fb23_f.txt bin/cov/fuzzbuilder/ssl_test_BIO_fuzzer output/fuzzbuilder/ssl_test_BIO_fuzzer/queue bin/cov/fuzzbuilder/crypto_test_BIO_fuzzer output/fuzzbuilder/crypto_test_BIO_fuzzer/queue
+fb4 : python /tool/coverage.py /exp/boringssl fb4 stdin source/boringssl exec exec_fb4_f.txt bin/cov/fuzzbuilder/ssl_test_SSL_fuzzer output/fuzzbuilder/ssl_test_SSL_fuzzer/queue
+b1, b2, b3, b4, b5, b6, b7, b8, b9, b11, b12 : python /tool/coverage.py /exp/boringssl b123456791112 file source/boringssl exec exec_b123456791112_f.txt bin/cov/oss-fuzz/bn_div output/oss-fuzz/bn_div/queue bin/cov/oss-fuzz/bn_mod_exp output/oss-fuzz/bn_mod_exp/queue bin/cov/oss-fuzz/client output/oss-fuzz/client/queue bin/cov/oss-fuzz/dtls_client output/oss-fuzz/dtls_client/queue bin/cov/oss-fuzz/dtls_server output/oss-fuzz/dtls_server/queue bin/cov/oss-fuzz/pkcs12 output/oss-fuzz/pkcs12/queue bin/cov/oss-fuzz/pkcs8 output/oss-fuzz/pkcs8/queue bin/cov/oss-fuzz/server output/oss-fuzz/server/queue bin/cov/oss-fuzz/spki output/oss-fuzz/spki/queue bin/cov/oss-fuzz/ssl_ctx_api output/oss-fuzz/ssl_ctx_api/queue
+b8 : python /tool/coverage.py /exp/boringssl b8 file source/boringssl exec exec_b8_o.txt bin/cov/oss-fuzz/read_pem output/oss-fuzz/read_pem/queue
+b10 : python /tool/coverage.py /exp/boringssl b10 file source/boringssl exec exec_b10_o.txt bin/cov/oss-fuzz/session output/oss-fuzz/session/queue
+fy1 : python /tool/coverage.py /exp/yara fy1 stdin source/yara exec exec_fy1_f.txt bin/cov/fuzzbuilder/yr_rules_scan_mem_fuzzer output/fuzzbuilder/yr_rules_scan_mem_fuzzer/queue
+fy2 : python /tool/coverage.py /exp/yara fy2 stdin source/yara exec exec_fy2_f.txt bin/cov/fuzzbuilder/yr_compiler_add_string_fuzzer output/fuzzbuilder/yr_compiler_add_string_fuzzer/queue
+y1, y2, y3, y4 : python /tool/coverage.py /exp/yara/ y1234 file source/yara exec exec_y1234_o.txt bin/cov/oss-fuzz/dex_fuzzer output/oss-fuzzer/dex_fuzzer/output bin/cov/oss-fuzz/dotnet_fuzzer output/oss-fuzzer/dotnet_fuzzer/output bin/cov/oss-fuzz/elf_fuzzer output/oss-fuzzer/elf_fuzzer/output bin/cov/oss-fuzz/pe_fuzzer output/oss-fuzzer/pe_fuzzer/output
+y5 : python /tool/coverage.py /exp/yara y5 file source/yara exec exec_y5_o.txt bin/cov/oss-fuzz/rules_fuzzer output/oss-fuzz/rules_fuzzer/queue
+
+#4. Command sets to evalute the number of called functions (Table 9)
+
+Checks output file in the directory after each command executed. Output file is txt file that is in each command. For example, The output of the first will be stored in api_cares_f.txt
+
+cares(fuzzbuilder) : python /tool/coverage_api.py /exp/c-ares/apis.txt /exp/c-ares source/c-ares fuzz api_cares_f.txt bin/cov/fuzzbuilder/ares_create_query_fuzzer output/fuzzbuilder/ares_create_query/queue bin/cov/fuzzbuilder/ares_parse_reply_fuzzer output/fuzzbuilder/ares_parse_reply/queue && 
+cares(unit test) : python /tool/coverage_api.py /exp/c-ares/apis.txt /exp/c-ares source/c-ares api_cares_u.txt unit source/c-ares/test/arestest
+expat(fuzzbuilder) : python /tool/coverage_api.py /exp/expat/apis.txt /exp/expat source/libexpat/expat api_expat_f.txt fuzz bin/cov/fuzzbuilder/XML_Parse_fuzzer output/fuzzbuilder/XML_Parse/queue
+expat(unit test) : python /tool/coverage_api.py /exp/expat/apis.txt /exp/expat source/libexpat/expat api_expat_u.txt unit source/libexpat/expat/tests/runtests
+boringssl(fuzzbuilder) : python /tool/coverage_api.py /exp/boringssl/apis.txt /exp/boringssl source/boringssl api_boringssl_f.txt fuzz bin/cov/fuzzbuilder/crypto_test_CBS_fuzzer output/fuzzbuilder/crypto_test_BIO_fuzzer/queue bin/cov/fuzzbuilder/ssl_test_SSL_fuzzer output/fuzzbuilder/ssl_test_SSL_fuzzer/queue bin/cov/fuzzbuilder/crypto_test_BIO_fuzzer output/fuzzbuilder/crypto_test_BIO_fuzzer/queue bin/cov/fuzzbuilder/ssl_test_BIO_fuzzer output/fuzzbuilder/ssl_test_BIO_fuzzer/queue
+boringssl(unit test) : python /tool/coverage_api.py /exp/boringssl/apis.txt /exp/boringssl source/boringssl api_boringssl_u.txt unit source/boringssl/ssl/ssl_test source/boringssl/crypto/crypto_test
+yara(fuzzbuilder) : python /tool/coverage_api.py /exp/yara/apis.txt /exp/yara source/yara api_yara_f.txt fuzz bin/cov/fuzzbuilder/yr_compiler_add_string_fuzzer output/fuzzbuilder/yr_compiler_add_string_fuzzer bin/cov/fuzzbuilder/yr_rules_scan_mem_fuzzer output/fuzzbuilder/yr_rules_scan_mem_fuzzer
+yara(unit test) : python /tool/coverage_api.py /exp/yara/apis.txt /exp/yara source/yara api_yara_u.txt unit source/yara/test-api
