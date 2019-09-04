@@ -157,3 +157,13 @@ boringssl(fuzzbuilder) : python /tool/coverage_api.py /exp/boringssl/apis.txt /e
 boringssl(unit test) : python /tool/coverage_api.py /exp/boringssl/apis.txt /exp/boringssl source/boringssl api_boringssl_u.txt unit source/boringssl/ssl/ssl_test source/boringssl/crypto/crypto_test
 yara(fuzzbuilder) : python /tool/coverage_api.py /exp/yara/apis.txt /exp/yara source/yara api_yara_f.txt fuzz bin/cov/fuzzbuilder/yr_compiler_add_string_fuzzer output/fuzzbuilder/yr_compiler_add_string_fuzzer bin/cov/fuzzbuilder/yr_rules_scan_mem_fuzzer output/fuzzbuilder/yr_rules_scan_mem_fuzzer
 yara(unit test) : python /tool/coverage_api.py /exp/yara/apis.txt /exp/yara source/yara api_yara_u.txt unit source/yara/test-api
+
+#5. Command sets to replay the bugs
+
+expat :  /tool/afl-2.52b/afl-fuzz -i /exp/expat/seed/fuzzbuilder/opt/XML_Parse -o /exp/expat/expat_bug -m 1024 /exp/expat/bin/fuzz/fuzzbuilder/bug_fuzzer
+
+cJSON : /tool/afl-2.52b/afl-fuzz -i /exp/cJSON/seed/fuzzbuilder/org -o /exp/expat/cJSON_bug -m 1024 /exp/cJSON/bin/fuzz/fuzzbuilder/misc_tests
+
+mpc1 : /tool/afl-2.52b/afl-fuzz -i /exp/mpc/seed/fuzzbuilder/opt/mpc_test_pass -o /exp/mpc/mpc_bug_1 -m 1024 /exp/mpc/bin/fuzz/fuzzbuilder/mpc_test_pass
+
+mpc2 : /tool/afl-2.52b/afl-fuzz -i /exp/mpc/seed/fuzzbuilder/opt/mpca_lang/ -o /exp/mpc/mpc_bug_2 -m 1024 /exp/mpc/bin/fuzz/fuzzbuilder/mpca_lang
