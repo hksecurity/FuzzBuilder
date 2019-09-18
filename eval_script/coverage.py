@@ -1,23 +1,27 @@
 import os, json, sys, csv, subprocess
 
 def usage():
-    print ("python " + __file__ + " worksapace id fuzzer source seed executable type")
+    print ("python " + __file__ + " worksapace id fuzzer source output, evaltype, execinfo...")
     sys.exit(0)
 
 def get_option(argv):
-    if len(argv) != 9:
+    if len(argv) < 6:
         usage()
 
     workspace = argv[1]
     id = argv[2]
     fuzzer = argv[3]
     source = argv[4]
-    seed = argv[5]
-    executable = argv[6]
-    output = argv[7]
-    type = argv[8]
+    evaltype = argv[5]
+    output = argv[6]
 
-    return workspace, id, fuzzer, source, seed, executable, output, type
+    execs = []
+    i = 7
+    while i < len(argv):
+        execs.append((argv[i], argv[i+1]))
+        i += 2
+
+    return workspace, id, fuzzer, source, evaltype, output, execs
 
 class gcov_unit():
     def __init__(self, title, vl, vb, tl, tb):
@@ -323,10 +327,10 @@ def get_total_coverage(units):
 
     return tl, tb, tf
 
-def report_exec(output, id, executable, result, accept, reject, seeds, inittime):
+def report_exec(output, id, result, accept, reject, seeds):
     f = open(output, "wt")
 
-    f.write(executable + "(" + id + ") [exec]\n")
+    f.write("(" + id + ") [exec]\n")
     f.write("time line\n")
 
     for i in range(0, len(result)):
@@ -340,17 +344,18 @@ def report_exec(output, id, executable, result, accept, reject, seeds, inittime)
     for e in reject:
         f.write("\t" + e + "\n")
 
-    f.write("seed orders:\n")
+    f.write("seed: + str(len(seeds))\n")
     for e in seeds:
-        f.write("\t" + e + str(float(os.path.getctime(e) - inittime)) + "\n")
+        f.write("\t" + e + "\n")
 
     f.close()
 
-def report_seed(output, id, executable, total, accept, reject, seeds):
+def report_seed(output, id, total, accept, reject, seeds):
     f = open(output, "wt")
 
-    f.write(executable + "(" + id + ") [seed]\n")
+    f.write(id + " [seed]\n")
     f.write("line coverage : " + str(total) + "\n")
+    f.write("total seed files : " + str(len(seeds)) + "\n")
 
     f.write("accepted files:\n")
     for e in accept:
@@ -359,10 +364,6 @@ def report_seed(output, id, executable, total, accept, reject, seeds):
     f.write("rejected files:\n")
     for e in reject:
         f.write("\t" + e + "\n")
-
-    f.write("seed orders:\n")
-    for e in seeds:
-        f.write(e + "\n")
 
     f.close()
 
@@ -447,100 +448,114 @@ def sum_coverage(coverage, workspace):
             reject.add(file)
         elif file.startswith("tests" + os.sep):
             reject.add(file)
+        elif file.endswith("tests.c"):
+            reject.add(file)
+        elif os.sep + "third_party" + os.sep in file:
+            reject.add(file)
         else:
             accept.add(file)
             total += visit
 
     return accept, reject, total
 
-def process_exec(workspace, id, fuzzer, source, seed, executable, output):
-    seeds = []
-    origs = []
-    for e in os.listdir(seed):
-        if os.path.isdir(seed + os.sep + e):
-            continue
-        if "orig" in e:
-            origs.append(seed + os.sep + e)
-        else:
+def process_exec(workspace, id, fuzzer, source, execs, output):
+    g_seeds = []
+    g_accept = set()
+    g_reject = set()
+    g_total = 0
+    g_ret = []
+
+    gcda_files = get_gcda_files(source)
+    for gcda_file in gcda_files:
+        os.unlink(gcda_file)
+
+    for e in execs:
+        seeds = []
+
+        executable = e[0]
+        seed = e[1]
+
+        seeds = []
+        origs = []
+        for e in os.listdir(seed):
+            if os.path.isdir(seed + os.sep + e):
+                continue
+            if "orig" in e:
+                origs.append(seed + os.sep + e)
+            else:
+                seeds.append(seed + os.sep + e)
+
+        seeds.sort(key=lambda x: os.path.getctime(x))
+        init_time = float(os.path.getctime(seeds[0]))
+        seeds = origs + seeds
+
+        g_seeds += seeds
+    
+        for i in range(0, len(seeds)):
+            e = seeds[i]
+
+            execute_single(executable, fuzzer, e, source)
+
+            gcda_files = get_gcda_files(source)
+            file_coverages = get_file_coverages(gcda_files)
+            accept, reject, total = sum_coverage(file_coverages, source)
+            if "orig" in os.path.basename(e):
+                time = 0
+            else:
+                time = float(os.path.getctime(e)) - init_time
+
+            print ("[" + str(i) + "/" + str(len(seeds))+ "] " + str(time) + " " + str(total) + "(" + os.path.basename(e) + ")")
+
+            g_accept = g_accept | accept
+            g_reject = g_reject | reject
+
+            if total > g_total:
+                print ("ACCEPTED\n")
+                g_total = total
+                g_ret.append((time, g_total))
+
+    report_exec(output, id, g_ret, g_accept, g_reject, g_seeds)
+
+def process_seed(workspace, id, fuzzer, source, execs, output):
+    g_seeds = []
+
+    gcda_files = get_gcda_files(source)
+    for gcda_file in gcda_files:
+        os.unlink(gcda_file)
+
+    for e in execs:
+        seeds = []
+
+        executable = e[0]
+        seed = e[1]
+
+        for e in os.listdir(seed):
+            if os.path.isdir(seed + os.sep + e):
+                continue
             seeds.append(seed + os.sep + e)
 
-    seeds.sort(key=lambda x: os.path.getctime(x))
-    init_time = float(os.path.getctime(seeds[0]))
-    seeds = origs + seeds
+        for i in range(0, len(seeds)):
+            e = seeds[i]
+            execute_single(executable, fuzzer, e, source)
+            print (str(i) + "/" + str(len(seeds)) + " for " + os.path.basename(executable))
 
-    g_accept = set()
-    g_reject = set()
-    g_total = 0
-    g_ret = []
-
-    gcda_files = get_gcda_files(source)
-    for gcda_file in gcda_files:
-        os.unlink(gcda_file)
-
-    for i in range(0, len(seeds)):
-        print ("[" + str(i) + "/" + str(len(seeds))+ "]")
-        e = seeds[i]
-
-        execute_single(executable, fuzzer, e, source)
-
-        gcda_files = get_gcda_files(source)
-        file_coverages = get_file_coverages(gcda_files)
-        accept, reject, total = sum_coverage(file_coverages, source)
-        if "orig" in os.path.basename(e):
-            time = 0
-        else:
-            time = float(os.path.getctime(e)) - init_time
-
-        print ("[" + str(i) + "/" + str(len(seeds))+ "] " + str(time) + " " + str(total) + "(" + os.path.basename(e) + ")")
-
-        g_accept = g_accept | accept
-        g_reject = g_reject | reject
-
-        if total > g_total:
-            print ("ACCEPTED\n")
-            g_total = total
-            g_ret.append((time, g_total))
-
-    report_exec(output, id, os.path.basename(executable), g_ret, g_accept, g_reject, seeds, init_time)
-
-def process_seed(workspace, id, fuzzer, source, seed, executable, output):
-    seeds = []
-    origs = []
-    for e in os.listdir(seed):
-        if os.path.isdir(seed + os.sep + e):
-            continue
-        seeds.append(seed + os.sep + e)
-
-    g_accept = set()
-    g_reject = set()
-    g_total = 0
-    g_ret = []
-
-    gcda_files = get_gcda_files(source)
-    for gcda_file in gcda_files:
-        os.unlink(gcda_file)
-
-    for i in range(0, len(seeds)):
-        e = seeds[i]
-        execute_single(executable, fuzzer, e, source)
-        print (str(i) + "/" + str(len(seeds)))
+        g_seeds += seeds
 
     gcda_files = get_gcda_files(source)
     file_coverages = get_file_coverages(gcda_files)
     accept, reject, total = sum_coverage(file_coverages, source)
-
-    report_seed(output, id, os.path.basename(executable), total, accept, reject, seeds)
+    report_seed(output, id, total, accept, reject, g_seeds)
 
 def main():
-    workspace, id, fuzzer, source, seed, executable, output, type = get_option(sys.argv)
+    workspace, id, fuzzer, source, type, output, execs = get_option(sys.argv)
     source = workspace + os.sep + source
-    seed = workspace + os.sep + seed
-    executable = workspace + os.sep + executable
+    for i in range(0, len(execs)):
+        execs[i] = ( workspace + os.sep + execs[i][0], workspace + os.sep + execs[i][1])
 
     if type == "exec":
-        process_exec(workspace, id, fuzzer, source, seed, executable, output)
+        process_exec(workspace, id, fuzzer, source, execs, output)
     elif type == "seed":
-        process_seed(workspace, id, fuzzer, source, seed, executable, output)
+        process_seed(workspace, id, fuzzer, source, execs, output)
     else:
         raise RuntimeError("unknown type(" + type + ")")
 

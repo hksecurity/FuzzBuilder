@@ -31,17 +31,15 @@ def option():
     execs = []
 
     i = 6
-    data = []
     while i < len(argv):
         if type == "fuzz":
-            data.append([argv[i], argv[i+1]])
+            execs.append([argv[i], argv[i+1]])
             i += 2
         else:
-            data.append([argv[i],])
+            execs.append([argv[i],])
             i += 1
-        i += 1
 
-    return api, workspace, source, output, data
+    return api, workspace, source, output, execs
 
 def create(src):
     f = open(src, "rt")
@@ -125,7 +123,6 @@ def get_function_coverages(api, srcs):
     ret = api
     for src in srcs:
         funcs = get_function_coverage(src)
-        print (funcs)
         ret = update(ret, funcs)
         
     return api
@@ -135,11 +132,12 @@ def execute_single(executable, run_type, seed, ws):
     output = open(os.devnull, "wt")
     if run_type == "fuzz":
         input = open(seed, "rt")
-        print (" ".join(cmd))
+        print (" ".join(cmd) + " < " + seed)
         p = subprocess.Popen(cmd, stdout = output, stderr = output, stdin = input, cwd = ws).communicate()
         input.close()
     else:
         print (" ".join(cmd))
+        print ("ws : " + ws)
         p = subprocess.Popen(cmd, stdout = output, stderr = output, cwd = ws).communicate()
     output.close()
 
@@ -165,13 +163,11 @@ def process_api(api, workspace, source, execs, output):
 
             for j in range(0, len(seeds)):
                 seed = seeds[j]
-                execute_single(executable, "fuzz", seed, workspace)
-                print (os.path.basename(executable) + " : [" + str(j) + "/" + str(len(seeds)))
+                execute_single(executable, "fuzz", seed, source)
+                print (os.path.basename(executable) + " : [" + str(j) + "/" + str(len(seeds)) + "]")
         else:
-            print (e)
-            print (e[0])
             executable = workspace + os.sep + e[0]
-            execute_single(executable, "unit", "unit", workspace)
+            execute_single(executable, "unit", "unit", source)
             print (os.path.basename(executable))
 
     gcda_files = get_gcda_files(source)
@@ -205,7 +201,6 @@ def report(output, src):
 
 def main():
     api, workspace, source, output, execs = option()
-    print (execs)
     process_api(api, workspace, source, execs, output)
 
 if __name__ == "__main__":
