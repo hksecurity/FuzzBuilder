@@ -153,6 +153,16 @@ void Loader::dump() const {
     }
 }
 
+void Loader::div_dump(const string func) const {
+    for(auto module : modules) {
+        string path = module.first + ".mod_" + func + ".bc";
+        if(LLVMWriteBitcodeToFile(reinterpret_cast<LLVMModuleRef>(module.second), path.c_str()) != 0) {
+            assert(false);
+        }
+        Logger::get()->log(INFO, module.first + " was modified to " + path);
+    }
+}
+
 void Loader::called() const {
     vector<Function*> functions;
     for(auto module : modules) {

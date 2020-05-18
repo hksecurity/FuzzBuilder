@@ -28,6 +28,7 @@ class Loader {
         bool load();
 
         void dump() const;
+        void div_dump(const string) const;
         void called() const;
         void print(log_level level) const;
 };

@@ -63,41 +63,47 @@ void ExecGen::generate() {
         return;
     }
 
-    set<Function*> targets;
-    set<Function*> skips;
-    for(size_t i = 0; i < Loader::get()->get_module_size(); ++i) {
-        IRReader reader = IRReader(&Loader::get()->get_module(i));
-        for(auto e : reader.get_functions_to_fuzz()) {
-            targets.insert(e);
-        }
-        for(auto e : reader.get_functions_to_remove()) {
-            skips.insert(e);
-        }
-    }
+	vector<string> fa_targets = Config::get()->get_targets();
+	for(auto fa_target: fa_targets) {
+		set<Function*> targets;
+		set<Function*> skips;
+		for(size_t i = 0; i < Loader::get()->get_module_size(); ++i) {
+			IRReader reader = IRReader(&Loader::get()->get_module(i));
+			for(auto e : reader.get_functions_to_fuzz()) {
+				targets.insert(e);
+			}
+			for(auto e : reader.get_functions_to_remove()) {
+				skips.insert(e);
+			}
+		}
 
-    size_t cnt = 1;
-    for(auto e : targets) {
-        Logger::get()->log(INFO, "Identified Target Functions #" +
-            to_string(cnt++) + " " + string(e->getName()));
-    }
+		size_t cnt = 1;
+		for(auto e : targets) {
+			Logger::get()->log(INFO, "Identified Target Functions #" +
+					to_string(cnt++) + " " + string(e->getName()));
+		}
 
-    cnt = 1;
-    for(auto e : skips) {
-        Logger::get()->log(INFO, "Identified Functions to remove #" +
-            to_string(cnt++) + " " + string(e->getName()));
-    }
+		cnt = 1;
+		for(auto e : skips) {
+			Logger::get()->log(INFO, "Identified Functions to remove #" +
+					to_string(cnt++) + " " + string(e->getName()));
+		}
 
-    if(targets.size() == 0) {
-        Logger::get()->log(WARN, "No Target Found.");
-        return;
-    }
+		if(targets.size() == 0) {
+			Logger::get()->log(WARN, "No Target Found.");
+			return;
+		}
 
-    if(!insert_interface()) {
-        return;
-    }
+		if(!insert_interface()) {
+			return;
+		}
 
-    insert_fuzz_to_tests(targets);
-    insert_skip_to_tests(skips);
+		insert_fuzz_to_tests(targets);
+		insert_skip_to_tests(skips);
 
-    Loader::get()->dump();
+		if(fa_targets.size() == 1)
+			Loader::get()->dump();
+		else
+			Loader::get()->div_dump(fa_target);
+	}
 }

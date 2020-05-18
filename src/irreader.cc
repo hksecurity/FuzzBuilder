@@ -113,6 +113,16 @@ Function* IRReader::get_callee(Instruction &i) const {
 }
 */
 
+bool IRReader::is_target(Function& f, const string target) const {
+    set<Function*> callees = this->get_callees(f);
+    for(auto callee : callees) {
+		if (string(callee->getName()) == target) {
+			return true;
+		}
+    }
+    return false;
+}
+
 bool IRReader::is_target(Function& f) const {
     vector<string> targets = Config::get()->get_targets();
     set<Function*> callees = this->get_callees(f);
@@ -172,6 +182,50 @@ set<Function*> IRReader::get_functions_to_fuzz() const {
     set<Function*> tmps;
     for(auto e : ret) {
         if (!this->is_target(*e)) {
+            tmps.insert(e);
+        }
+    }
+    cnt = 1;
+    for(auto e : tmps) {
+        Logger::get()->log(DEBUG, "No Target Function #" +
+            to_string(cnt++) + " " + string(e->getName()));
+    }
+    for(auto e : tmps) {
+        ret.erase(e);
+    }
+
+    tmps.clear();
+    vector<string> skip_opts = Config::get()->get_skips();
+    for(auto e : ret) {
+        string n = string(e->getName());
+        if(find(skip_opts.begin(), skip_opts.end(), n) != skip_opts.end()) {
+            tmps.insert(e);
+        }
+    }
+    cnt = 1;
+    for(auto e : tmps) {
+        Logger::get()->log(DEBUG, "Skip Function #" +
+            to_string(cnt++) + " " + string(e->getName()));
+    }
+    for(auto e : tmps) {
+        ret.erase(e);
+    }
+
+    return ret;
+}
+
+set<Function*> IRReader::get_functions_to_fuzz(const string fa_target) const {
+    set<Function*> ret = this->get_test_functions();
+
+    size_t cnt = 1;
+    for(auto e : ret) {
+        Logger::get()->log(DEBUG, "Test Function #" +
+            to_string(cnt++) + " " + string(e->getName()));
+    }
+
+    set<Function*> tmps;
+    for(auto e : ret) {
+        if (!this->is_target(*e, fa_target)) {
             tmps.insert(e);
         }
     }

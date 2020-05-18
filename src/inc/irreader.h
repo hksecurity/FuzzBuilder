@@ -17,12 +17,14 @@ class IRReader {
         set<Function*> get_target_functions() const;
 
         bool is_target(Function& f) const;
+        bool is_target(Function& f, const string) const;
         bool is_target(Instruction& i) const;
         bool is_test(Function& f) const;
 
     public:
         IRReader(Module* m);
         set<Function*> get_functions_to_fuzz() const;
+        set<Function*> get_functions_to_fuzz(const string) const;
         set<Function*> get_functions_to_remove() const;
         set<Function*> get_functions_to_collect() const;
         set<Instruction*> get_target_instructions(string n) const;
